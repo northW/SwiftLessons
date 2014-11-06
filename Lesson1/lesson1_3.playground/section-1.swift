@@ -60,13 +60,30 @@ let mathScore:UInt16 = 1300
 //var totalScore4 = historyScore + UInt8(mathScore) // 运行时异常
 
 // 整型和浮点型之间的转换
-let score1:Float = 90.5
-let score2:UInt16 = 130
+let historyScore1:Float = 90.5
+let englishScore2:UInt16 = 130
 
-//let totalScore4 = score1 + score2        // 错误                 ①
-let totalScore5 = score1 + Float(score2)   // 正确 安全             ②
-let totalScore6 = UInt16(score1) + score2  // 正确 小数被裁掉 不安全  ③
+//let totalScore4 = historyScore1 + englishScore2        // 错误                 ①
+let totalScore5 = historyScore1 + Float(englishScore2)   // 正确 安全             ②
+let totalScore6 = UInt16(historyScore1) + englishScore2  // 正确 小数被裁掉 不安全  ③
 
 // 布尔型
 var isTrue = true
 var isFalse:Bool = false
+
+
+// 元组
+var student1 = ("1001", "张三", 20, 90)
+println("学生：\(student1.1) 学号：\(student1.0) 年龄：\(student1.2) 得分：\(student1.3)")
+
+var student2 = (id:"1002", name:"李四", age:22, score:80)
+println("学生：\(student2.name) 学号：\(student2.id) 年龄：\(student2.age) 得分：\(student2.score)")
+
+let (id1,name1,age1,score1) = student1    // 把元组变量student1分解到4个不同的变量中
+println("学生：\(name1) 学号：\(id1) 年龄：\(age1) 得分：\(score1)")
+
+let (id2, name2, _, _,) = student2        // 不需要使用的字段可以用下划线（_）代替
+println("学生：\(name2) 学号：\(id2)")
+
+
+
