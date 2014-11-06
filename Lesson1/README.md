@@ -280,7 +280,7 @@ println("学生：\(student2.name) 学号：\(student2.id) 年龄：\(student2.a
 let (id1,name1,age1,score1) = student1    // 把元组变量student1分解到4个不同的变量中
 println("学生：\(name1) 学号：\(id1) 年龄：\(age1) 得分：\(score1)")
 
-let (id2, name2, _, _,) = student2        // 不需要使用的字段可以用下划线（_）代替
+let (id2, name2, _, _) = student2        // 不需要使用的字段可以用下划线（_）代替
 println("学生：\(name2) 学号：\(id2)")
 ```
 
