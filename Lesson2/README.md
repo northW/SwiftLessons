@@ -431,3 +431,155 @@ default:
 println(description)
 // 输出 "The number 5 is a prime number, and also an integer."
 ```
+
+##2.集合
+Swift 语言提供经典的数组和字典两种集合类型来存储集合数据。数组用来按顺序存储相同类型的数据。字典虽然无序存储相同类型数据值但是需要由独有的标识符引用和寻址（就是键值对）  
+Swift 语言里的数组和字典中存储的数据值类型必须明确。 这意味着我们不能把不正确的数据类型插入其中。 同时这也说明我们完全可以对获取出的值类型非常自信。
+###数组
+数组使用有序列表存储相同类型的多重数据。相同的值可以多次出现在一个数组的不同位置中  
+Swift 数组对存储数据有具体要求。 不同于 Objective-C 的`NSArray`和`NSMutableArray`类，他们可以存储任何类型的实例而且不提供他们返回对象的任何本质信息。 在 Swift 中，数据值在被存储进入某个数组之前类型必须明确，方法是通过显式的类型标注或类型推断
+####数组声明与初始化
+数组的声明：
+
+```
+var array:Array<SomeType>
+var array:[SomeType]
+```
+`SomeType`是这个数组中唯一允许存在的数据类型  
+数组的初始化：
+
+```
+var shoppingList: [String] = ["Eggs", "Milk"]
+var shoppingList2 = ["Eggs", "Milk"]
+var shoppingList3 = [String]()
+```
+`[String]()`初始化了一个空的数组
+
+####访问和修改
+我们可以通过数组的方法和属性来访问和修改数组，或者下标语法。 还可以使用数组的只读属性`count`来获取数组中的数据项数量。
+
+```
+println("The shopping list contains \(shoppingList.count) items.")
+// 输出"The shopping list contains 2 items."
+```
+使用布尔项`isEmpty`来作为检查`count`属性的值是否为 0 的捷径
+
+```
+if shoppingList.isEmpty {
+    println("The shopping list is empty.")
+} else {
+    println("The shopping list is not empty.")
+}
+// 打印 "The shopping list is not empty."
+```
+在数组后面添加新的数据项
+
+```
+shoppingList.append("Flour")
+println(shoppingList)
+// ["Eggs", "Milk", "Flour"]
+shoppingList += ["Cheese", "Butter"]
+println(shoppingList)
+// ["Eggs", "Milk", "Flour","Cheese", "Butter"]
+```
+通过下标来访问和修改数组中的数据项
+
+```
+println(shoppingList[0])
+// Eggs
+shoppingList[0] = "Chocolate"
+println(shoppingList[0])
+// Chocolate
+shoppingList[2...4] = ["Bananas", "Apples"]
+println(shoppingList)
+// ["Chocolate", "Milk", "Bananas", "Apples"]
+```
+通过方法修改数组中的数据项
+
+```
+shoppingList.insert("Cake", atIndex:1)
+println(shoppingList)
+// ["Chocolate", "Cake", "Milk", "Bananas", "Apples"]
+var item = shoppingList.removeAtIndex(1)
+println(shoppingList)
+// ["Chocolate", "Milk", "Bananas", "Apples"]
+var last = shoppingList.removeLast()
+println(shoppingList)
+// ["Chocolate", "Milk", "Bananas"]
+```
+####数组的遍历
+```
+for item in shoppingList {
+    println(item)
+}
+for (index, value) in enumerate(shoppingList) {
+    println("Item \(index + 1): \(value)")
+}
+```
+
+###字典
+字典是一种存储相同类型多重数据的存储器。每个值（value）都关联独特的键（key），键作为字典中的这个值数据的标识符。和数组中的数据项不同，字典中的数据项并没有具体顺序  
+Swift 的字典使用时需要具体规定可以存储键和值类型。不同于 Objective-C 的`NSDictionary`和N`SMutableDictionary` 类可以使用任何类型的对象来作键和值并且不提供任何关于这些对象的本质信息。在 Swift 中，在某个特定字典中可以存储的键和值必须提前定义清楚，方法是通过显性类型标注或者类型推断
+####字典声明和初始化
+```
+var airports: Dictionary<String, String> = ["TYO": "Tokyo", "DUB": "Dublin"]
+var airports = ["TYO": "Tokyo", "DUB": "Dublin"]
+var emptyDiction = Dictionary<String, String>()
+```
+####访问和修改
+```
+println("The dictionary of airports contains \(airports.count) items.")
+// 打印 "The dictionary of airports contains 2 items."
+airports["LHR"] = "London"
+// airports 字典现在有三个数据项
+airports["LHR"] = "London Heathrow"
+// "LHR"对应的值 被改为 "London Heathrow
+if let oldValue = airports.updateValue("Dublin Internation", forKey: "DUB") {
+    println("The old value for DUB was \(oldValue).")
+}
+// 输出 "The old value for DUB was Dublin."（dub原值是dublin
+if let airportName = airports["DUB"] {
+    println("The name of the airport is \(airportName).")
+} else {
+    println("That airport is not in the airports dictionary.")
+}
+// 打印 "The name of the airport is Dublin INTernation."
+airports["APL"] = "Apple Internation"
+// "Apple Internation"不是真的 APL机场, 删除它
+airports["APL"] = nil
+// APL现在被移除了
+if let removedValue = airports.removeValueForKey("DUB") {
+    println("The removed airport's name is \(removedValue).")
+} else {
+    println("The airports dictionary does not contain a value for DUB.")
+}
+// prints "The removed airport's name is Dublin International."
+```
+####遍历字典
+```
+for (airportCode, airportName) in airports {
+    println("\(airportCode): \(airportName)")
+}
+// TYO: Tokyo
+// LHR: London Heathrow
+```
+也可以通过访问他的`keys`或者`values`属性（都是可遍历集合）检索一个字典的键或者值：
+
+```
+for airportCode in airports.keys {
+    println("Airport code: \(airportCode)")
+}
+for airportName in airports.values {
+    println("Airport name: \(airportName)")
+}
+```
+###集合的复制
+Swift中的集合都是结构体类型，即值类型。值类型在赋值或参数传递时会发生复制行为，赋予的值或传递的参数是一个副本
+
+```
+var students = [101:"Tom",102:"Jerry"]
+var copyStudents = students
+copyStudents[101] = "Tomy"
+println(students)
+println(copyStudents)
+```
