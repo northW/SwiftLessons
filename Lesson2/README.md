@@ -583,3 +583,304 @@ copyStudents[101] = "Tomy"
 println(students)
 println(copyStudents)
 ```
+##3.函数
+在 Swift 中，每个函数都有一种类型，包括函数的参数值类型和返回值类型。你可以把函数类型当做任何其他普通变量类型一样处理，这样就可以更简单地把函数当做别的函数的参数，也可以从其他函数中返回函数。函数的定义可以写在在其他函数定义中，这样可以在嵌套函数范围内实现功能封装
+
+###函数的定义与调用
+在下面例子中的函数叫做"greetingForPerson"，之所以叫这个名字是因为这个函数用一个人的名字当做输入，并返回给这个人的问候语。为了完成这个任务，你定义一个输入参数-一个叫做 `personName` 的 `String` 值，和一个包含给这个人问候语的 `String` 类型的返回值：
+
+```
+func sayHello(personName: String) -> String {
+    let greeting = "Hello, " + personName + "!"
+    return greeting
+}
+println(sayHello("Anna"))
+// prints "Hello, Anna!"
+```
+所有的这些信息汇总起来成为函数的定义，并以 `func` 作为前缀。指定函数返回类型时，用返回箭头 ->（一个连字符后跟一个右尖括号）后跟返回类型的名称的方式来表示
+
+###函数参数与返回值
+####多重输入参数
+函数可以有多个输入参数，写在圆括号中，用逗号分隔
+
+```
+func halfOpenRangeLength(start: Int, end: Int) -> Int {
+    return end - start
+}
+println(halfOpenRangeLength(1, 10))
+// prints "9
+```
+
+####无参函数
+
+```
+func sayHelloWorld() -> String {
+    return "hello, world"
+}
+println(sayHelloWorld())
+```
+
+####无返回值函数
+
+```
+func sayGoodbye(personName: String) {
+    println("Goodbye, \(personName)!")
+}
+sayGoodbye("Dave")
+// prints "Goodbye, Dave!
+```
+因为这个函数不需要返回值，所以这个函数的定义中没有返回箭头（`->`）和返回类型
+>严格上来说，虽然没有返回值被定义，sayGoodbye 函数依然返回了值。没有定义返回类型的函数会返回特殊的值，叫 `Void`。它其实是一个空的元组（`tuple`），没有任何元素，可以写成`()`
+
+####多重返回值函数
+你可以用元组（tuple）类型让多个值作为一个复合值从函数中返回
+
+```
+func count(string: String) -> (vowels: Int, consonants: Int, others: Int) {
+    var vowels = 0, consonants = 0, others = 0
+    for character in string {
+        switch String(character).lowercaseString {
+        case "a", "e", "i", "o", "u":
+            ++vowels
+        case "b", "c", "d", "f", "g", "h", "j", "k", "l", "m",
+        "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z":
+            ++consonants
+        default:
+            ++others
+        }
+    }
+    return (vowels, consonants, others)
+}
+let total = count("some arbitrary string!")
+println("\(total.vowels) vowels and \(total.consonants) consonants")
+// prints "6 vowels and 13 consonants
+```
+
+###函数参数名称
+以上所有的函数都给它们的参数定义了`参数名（parameter name）`：
+
+```
+func someFunction(parameterName: Int) {
+    // function body goes here, and can use parameterName
+    // to refer to the argument value for that parameter
+}
+```
+但是，这些参数名仅在函数体中使用，不能在函数调用时使用。这种类型的参数名被称作局部参数名（local parameter name），因为它们只能在函数体中使用。
+
+####外部参数名
+有时候，调用函数时，给每个参数命名是非常有用的，因为这些参数名可以指出各个实参的用途是什么。
+
+如果你希望函数的使用者在调用函数时提供参数名字，那就需要给每个参数除了局部参数名外再定义一个外部参数名。外部参数名写在局部参数名之前，用空格分隔
+
+```
+func join(string s1: String, toString s2: String, withJoiner joiner: String) -> String {
+    return s1 + joiner + s2
+}
+join(string: "hello", toString: "world", withJoiner: ", ")
+// returns "hello, world
+```
+>如果你提供了外部参数名，那么函数在被调用时，必须使用外部参数名
+
+####简写外部参数名
+如果你需要提供外部参数名，但是局部参数名已经定义好了，那么你不需要写两次这些参数名。相反，只写一次参数名，并用井号（`#`）作为前缀就可以了。这告诉 Swift 使用这个参数名作为局部和外部参数名
+
+```
+func containsCharacter(#string: String, #characterToFind: Character) -> Bool {
+    for character in string {
+        if character == characterToFind {
+            return true
+        }
+    }
+    return false
+}
+let containsAVee = containsCharacter(string: "aardvark", characterToFind: "v")
+// return true
+```
+
+####默认参数值
+你可以在函数体中为每个参数定义默认值。当默认值被定义后，调用这个函数时可以略去这个参数
+
+```
+func anotherJoin(string s1: String, toString s2: String, withJoiner joiner: String = " ") -> String {
+    return s1 + joiner + s2
+}
+anotherJoin(string: "hello", toString: "world", withJoiner: "-")
+// returns "hello-world
+anotherJoin(string: "hello", toString:"world")
+// returns "hello world"
+```
+
+####可变参数
+一个可变参数可以接受一个或多个值。函数调用时，你可以用可变参数来传入不确定数量的输入参数。通过在变量类型名后面加入（`...`）的方式来定义可变参数。
+
+传入可变参数的值在函数体内当做这个类型的一个数组。例如，一个叫做 `numbers` 的 `Double...` 型可变参数，在函数体内可以当做一个叫 `numbers` 的 `[Double]` 型的数组常量
+
+```
+func arithmeticMean(numbers: Double...) -> Double {
+    var total: Double = 0
+    for number in numbers {
+        total += number
+    }
+    return total / Double(numbers.count)
+}
+arithmeticMean(1, 2, 3, 4, 5)
+// returns 3.0
+arithmeticMean(3, 8, 19)
+// returns 10.0
+```
+
+####常量参数和变量参数
+函数参数默认是常量。试图在函数体中更改参数值将会导致编译错误。这意味着你不能错误地更改参数值。
+
+但是，有时候，如果函数中有传入参数的变量值副本将是很有用的。你可以通过指定一个或多个参数为变量参数，从而避免自己在函数中定义新的变量。变量参数不是常量，你可以在函数中把它当做新的可修改副本来使用。
+
+通过在参数名前加关键字 `var` 来定义变量参数
+
+```
+func alignRight(var string: String, count: Int, pad: String) -> String {
+    let amountToPad = count - countElements(string)
+    for _ in 1...amountToPad {
+        string = pad + string
+    }
+    return string
+}
+let originalString = "hello"
+let paddedString = alignRight(originalString, 10, "-")
+```
+
+####输入输出参数
+变量参数，正如上面所述，仅仅能在函数体内被更改。如果你想要一个函数可以修改参数的值，并且想要在这些修改在函数调用结束后仍然存在，那么就应该把这个参数定义为输入输出参数
+
+定义一个输入输出参数时，在参数定义前加 `inout` 关键字。一个输入输出参数有传入函数的值，这个值被函数修改，然后被传出函数，替换原来的值。
+
+你只能传入一个变量作为输入输出参数。你不能传入常量或者字面量（literal value），因为这些量是不能被修改的。当传入的参数作为输入输出参数时，需要在参数前加`&`符，表示这个值可以被函数修改
+>输入输出参数不能有默认值，而且变量参数不能用 `inout` 标记。如果你用 `inout` 标记一个参数，这个参数不能用 `var` 或者 `let` 标记
+
+```
+func swapTwoInts(inout a: Int, inout b: Int) {
+    let temporaryA = a
+    a = b
+    b = temporaryA
+}
+var someInt = 3
+var anotherInt = 107
+swapTwoInts(&someInt, &anotherInt)
+println("someInt is now \(someInt), and anotherInt is now \(anotherInt)")
+// prints "someInt is now 107, and anotherInt is now 3”
+```
+
+###函数类型
+每个函数都有种特定的函数类型，由函数的参数类型和返回类型组成
+
+```
+func addTwoInts(a: Int, b: Int) -> Int {
+    return a + b
+}
+```
+函数的类型是 `(Int, Int) -> Int`，可以读作“这个函数类型，它有两个 `Int` 型的参数并返回一个 `Int` 型的值。”
+
+```
+func printHelloWorld() {
+    println("hello, world")
+}
+```
+这个函数的类型是：`() -> ()`，或者叫“没有参数，并返回 `Void` 类型的函数。”。没有指定返回类型的函数总返回 `Void`。在Swift中，`Void` 与空的元组是一样的
+
+####使用函数类型
+在Swift中，使用函数类型就像使用其他类型一样。例如，你可以定义一个常量或变量，它的类型是函数，并且可以幅值为一个函数
+
+```
+var mathFunction: (Int, Int) -> Int = addTwoInts
+println("Result: \(mathFunction(2, 3))")
+// prints "Result: 5
+```
+
+####函数类型作为参数类型
+你可以用`(Int, Int) -> Int`这样的函数类型作为另一个函数的参数类型。这样你可以将函数的一部分实现交由给函数的调用者。
+
+```
+func printMathResult(mathFunction: (Int, Int) -> Int, a: Int, b: Int) {
+    println("Result: \(mathFunction(a, b))")
+}
+printMathResult(addTwoInts, 3, 5)
+// prints "Result: 8”
+```
+
+####函数类型作为返回类型
+你可以用函数类型作为另一个函数的返回类型。你需要做的是在返回箭头（`->`）后写一个完整的函数类型
+
+```
+func stepForward(input: Int) -> Int {
+    return input + 1
+}
+func stepBackward(input: Int) -> Int {
+    return input - 1
+}
+func chooseStepFunction(backwards: Bool) -> (Int) -> Int {
+    return backwards ? stepBackward : stepForward
+}
+var currentValue = 3
+let moveNearerToZero = chooseStepFunction(currentValue > 0)
+while currentValue != 0 {
+    println("\(currentValue)... ")
+    currentValue = moveNearerToZero(currentValue)
+}
+```
+
+###嵌套函数
+```
+func chooseStepFunction(backwards: Bool) -> (Int) -> Int {
+    func stepForward(input: Int) -> Int { return input + 1 }
+    func stepBackward(input: Int) -> Int { return input - 1 }
+    return backwards ? stepBackward : stepForward
+}
+var currentValue = -4
+let moveNearerToZero = chooseStepFunction(currentValue > 0)
+// moveNearerToZero now refers to the nested stepForward() function
+while currentValue != 0 {
+    println("\(currentValue)... ")
+    currentValue = moveNearerToZero(currentValue)
+}
+```
+
+###函数重载
+函数重载是指多个函数享有相同的名字但是函数类型必须不同的一组函数
+>在Swift中函数名相同、参数列表不同或返回值类型不同的函数都可以构成重载
+
+```
+func receive(i : Int)  {
+    println("接收一个Int类型数据 i=\(i)");
+}
+
+func receive(d :Double) {
+    println("接收一个Doubel类型数据 d=\(d)");
+}
+
+func receive(x :Int, y :Int)  {
+    println("接收两个Int类型数据 x=\(x) y=\(y)");
+}
+
+func receive(i :Int) ->Int {
+    println("接收一个Int类型数据 i=\(i), 返回值类型是Int");
+    return i;
+}
+
+func receive(param i : Int)  {
+    println("接收一个Int类型数据 i=\(i)，外部参数名param");
+}
+```
+
+###泛型函数
+```
+func isEquals<T: Comparable>(a: T, b: T) -> Bool {
+    return (a == b)
+}
+
+let n1 = 200
+let n2 = 100
+
+println(isEquals(n1, n2))
+
+let s1 = "ABC1"
+let s2 = "ABC1"
+```
