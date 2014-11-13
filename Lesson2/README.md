@@ -884,3 +884,96 @@ println(isEquals(n1, n2))
 let s1 = "ABC1"
 let s2 = "ABC1"
 ```
+
+##4.闭包
+闭包是自包含的函数代码块，可以在代码中被传递和使用。 Swift 中的闭包与 C 和 Objective-C 中的代码块（blocks）以及其他一些编程语言中的 lambdas 函数比较相似。
+
+闭包可以捕获和存储其所在上下文中任意常量和变量的引用。 这就是所谓的闭合并包裹着这些常量和变量，俗称闭包。Swift 会为您管理在捕获过程中涉及到的所有内存操作。
+
+一门计算机语言要支持闭包有两个前提
+
+* 支持函数类型，能够将函数作为参数或返回值传递
+* 支持函数嵌套
+
+###闭包表达式
+####sort 函数
+Swift 标准库提供了`sort`函数，会根据您提供的基于输出类型排序的闭包函数将已知类型数组中的值进行排序。 一旦排序完成，函数会返回一个与原数组大小相同的新数组，该数组中包含已经正确排序的同类型元素
+
+```
+var names = ["Chris", "Alex", "Ewa", "Barry", "Daniella"]
+func backwards(s1: String, s2: String) -> Bool {
+    return s1 > s2
+}
+sort(&names, backwards)
+// names 为 ["Ewa", "Daniella", "Chris", "Barry", "Alex"]
+```
+####闭包表达式语法
+```
+{ (parameters) -> returnType in
+    statements
+}
+```
+下面的例子展示了之前`backwards`函数对应的闭包表达式版本的代码：
+
+```
+sort(&names, { (s1: String, s2: String) -> Bool in
+    return s1 > s2
+})
+```
+
+####根据上下文推断类型
+因为排序闭包函数是作为`sort`函数的参数进行传入的，Swift可以推断其参数和返回值的类型。 `sort`期望第二个参数是类型为`(String, String) -> Bool`的函数，因此实际上`String`,`String`和`Bool`类型并不需要作为闭包表达式定义中的一部分。 因为所有的类型都可以被正确推断，返回箭头 (`->`) 和围绕在参数周围的括号也可以被省略：
+
+```
+sort(&names, { s1, s2 in
+    return s1 > s2
+})
+```
+
+####参数名称缩写
+Swift 自动为内联函数提供了参数名称缩写功能，您可以直接通过`$0`,`$1`,`$2`来顺序调用闭包的参数
+
+```
+sort(&names, { return $0 > $1 } )
+```
+
+####运算符函数
+Swift 的String类型定义了关于大于号 (>) 的字符串实现，其作为一个函数接受两个String类型的参数并返回Bool类型的值。 而这正好与sort函数的第二个参数需要的函数类型相符合
+
+```
+sort(&names, >)
+```
+
+####尾随闭包
+如果您需要将一个很长的闭包表达式作为最后一个参数传递给函数，可以使用尾随闭包来增强函数的可读性
+
+```
+sort(&names){ return $0 > $1 }
+```
+
+####捕获值
+
+```
+func makeIncrementor(forIncrement amount: Int) -> () -> Int {
+    var runningTotal = 0
+    func incrementor() -> Int {
+        runningTotal += amount
+        return runningTotal
+    }
+    return incrementor
+}
+
+let incrementByTen = makeIncrementor(forIncrement: 10)
+incrementByTen()
+// 返回的值为10
+incrementByTen()
+// 返回的值为20
+incrementByTen()
+// 返回的值为30
+
+let incrementBySeven = makeIncrementor(forIncrement: 7)
+incrementBySeven()
+// 返回的值为7
+incrementByTen()
+// 返回的值为40
+```
